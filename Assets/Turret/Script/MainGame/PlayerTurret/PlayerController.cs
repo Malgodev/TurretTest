@@ -9,6 +9,7 @@ public class PlayerController : TurretController
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Config")]
+    [SerializeField] private TurretManagerScriptableObject tankManagerValue;
     private float lastFireTime;
 
     private int fire = 0;

@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] public static GameManager Instance { get; private set; }
 
+    [field: SerializeField] public PlayerController PlayerController { get; private set; }
+
     [SerializeField] private float FPS;
 
     private void Awake()

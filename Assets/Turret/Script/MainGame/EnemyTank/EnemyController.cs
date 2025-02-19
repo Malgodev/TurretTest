@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Transactions;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
@@ -12,8 +14,8 @@ public class EnemyController : TurretController
     private Rigidbody rb;
 
     [SerializeField] private float movementSpeed = 1f;
+    [SerializeField] private float rotationSpeed = 0.1f;
     float MOVE_SPEED_SCALE = 10f;
-    Vector3 targetPosition;
 
     bool isMoving = false;
 
@@ -28,9 +30,7 @@ public class EnemyController : TurretController
         {
             Vector3 targetPos = GetRandomPosition();
 
-            Debug.Log(targetPos);
-
-            // StartCoroutine(MoveAndShotAtPosition(targetPosition));
+            StartCoroutine(MoveAndShotAtPosition(targetPos));
         }
 
         // MoveToPosition(targetPosition);
@@ -39,27 +39,51 @@ public class EnemyController : TurretController
     IEnumerator MoveAndShotAtPosition(Vector3 newTankPosition)
     {
         isMoving = true;
-        Vector3 direction;
-        float initialDistance = Vector3.Distance(transform.position, newTankPosition);
 
         while (Vector3.Distance(transform.position, newTankPosition) >= 0.5f)
         {
-            direction = newTankPosition - transform.position;
-            float currentDistance = Vector3.Distance(transform.position, newTankPosition);
-
-            float speedMultiplier = Mathf.Clamp(currentDistance / initialDistance, 0.5f, 1f);
+            Vector3 direction = newTankPosition - transform.position;
 
             transform.rotation = Quaternion.LookRotation(direction);
 
-            rb.AddForce(transform.forward * movementSpeed * MOVE_SPEED_SCALE * speedMultiplier, ForceMode.Acceleration);
+            rb.AddForce(transform.forward * movementSpeed * MOVE_SPEED_SCALE, ForceMode.Acceleration);
 
             yield return null;
         }
 
         transform.position = newTankPosition;
-        isMoving = false;
 
-        Debug.Log("Done");
+        Vector3 playerPosition = GameManager.Instance.PlayerController.transform.position;
+        playerPosition.y = 1.5f;
+
+        Debug.Log(playerPosition);
+
+        Quaternion playerDirection = Quaternion.LookRotation(playerPosition - transform.position);
+        Quaternion originDirection = turret.rotation;
+
+        while (Quaternion.Angle(turret.rotation, playerDirection) >= 0.1f)
+        {
+            turret.rotation = Quaternion.RotateTowards(turret.rotation, playerDirection, rotationSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        turret.rotation = playerDirection;
+
+        // Shot
+
+
+        while (Quaternion.Angle(turret.rotation, originDirection) >= 0.1f)
+        {
+            turret.rotation = Quaternion.RotateTowards(turret.rotation, originDirection, rotationSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        turret.rotation = originDirection;
+
+        yield return new WaitForSeconds(2f);
+        isMoving = false;
     }
 
     private Vector3 GetRandomPosition()
@@ -69,8 +93,8 @@ public class EnemyController : TurretController
 
         do
         {
-            randomX = Random.Range(-30f, 30f);
-            randomY = Random.Range(-30f, 30f);
+            randomX = Random.Range(-15f, 15f);
+            randomY = Random.Range(-15f, 15f);
         }
         while (Mathf.Abs(randomX) <= 5f || Mathf.Abs(randomY) <= 5f);
 

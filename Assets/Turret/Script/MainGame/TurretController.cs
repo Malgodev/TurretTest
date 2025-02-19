@@ -5,7 +5,7 @@ using UnityEngine;
 public class TurretController : MonoBehaviour
 {
     [Header("Transform")]
-    [SerializeField] private Transform turret;
+    [SerializeField] protected Transform turret;
 
     [Header("Config")]
     protected float fireRate = 0.1f;

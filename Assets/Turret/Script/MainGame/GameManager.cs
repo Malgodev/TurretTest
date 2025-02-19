@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] public GameManager Instance { get; private set; }
+    [SerializeField] public static GameManager Instance { get; private set; }
 
     [SerializeField] private float FPS;
 

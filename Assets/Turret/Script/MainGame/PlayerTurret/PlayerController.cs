@@ -11,6 +11,8 @@ public class PlayerController : TurretController
     [Header("Config")]
     private float lastFireTime;
 
+    private int fire = 0;
+
     void Start()
     {
         
@@ -25,6 +27,7 @@ public class PlayerController : TurretController
         if (Input.GetMouseButton(0) && lastFireTime > fireRate)
         {
             lastFireTime = 0;
+            Debug.Log(fire++ + " " + Time.time);
             StartCoroutine(Fire());
         }
     }

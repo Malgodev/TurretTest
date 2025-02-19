@@ -71,6 +71,7 @@ public class EnemyController : TurretController
         turret.rotation = playerDirection;
 
         // Shot
+        StartCoroutine(Fire());
 
 
         while (Quaternion.Angle(turret.rotation, originDirection) >= 0.1f)

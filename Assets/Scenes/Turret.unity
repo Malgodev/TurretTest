@@ -681,7 +681,7 @@ MonoBehaviour:
   turret: {fileID: 1460209595}
   tankManagerValue: {fileID: 11400000, guid: 3549bb9f34dd5b141844116858022661, type: 2}
   movementSpeed: 2
-  rotationSpeed: 10
+  rotationSpeed: 50
 --- !u!4 &1343218359
 Transform:
   m_ObjectHideFlags: 0

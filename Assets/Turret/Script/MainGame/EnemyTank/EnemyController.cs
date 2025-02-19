@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -13,7 +14,7 @@ public class EnemyController : TurretController
     [SerializeField] private float movementSpeed = 1f;
     float MOVE_SPEED_SCALE = 10f;
     Vector3 targetPosition;
-    
+
     bool isMoving = false;
 
     private void Start()
@@ -25,11 +26,11 @@ public class EnemyController : TurretController
     {
         if (!isMoving)
         {
-            Vector2 randomPoint = Random.insideUnitCircle * 15f;
+            Vector3 targetPos = GetRandomPosition();
 
-            targetPosition = new Vector3(randomPoint.x, 1.5f, randomPoint.y);
+            Debug.Log(targetPos);
 
-            StartCoroutine(MoveAndShotAtPosition(targetPosition));
+            // StartCoroutine(MoveAndShotAtPosition(targetPosition));
         }
 
         // MoveToPosition(targetPosition);
@@ -46,16 +47,34 @@ public class EnemyController : TurretController
             direction = newTankPosition - transform.position;
             float currentDistance = Vector3.Distance(transform.position, newTankPosition);
 
-            float speedMultiplier = Mathf.Clamp(currentDistance / initialDistance, 0.3f, 1f);
-
-            Debug.Log($"Position: {transform.position}, Target: {newTankPosition}, Speed Multiplier: {speedMultiplier}");
+            float speedMultiplier = Mathf.Clamp(currentDistance / initialDistance, 0.5f, 1f);
 
             transform.rotation = Quaternion.LookRotation(direction);
+
             rb.AddForce(transform.forward * movementSpeed * MOVE_SPEED_SCALE * speedMultiplier, ForceMode.Acceleration);
+
             yield return null;
         }
 
         transform.position = newTankPosition;
         isMoving = false;
+
+        Debug.Log("Done");
+    }
+
+    private Vector3 GetRandomPosition()
+    {
+        float randomX ;
+        float randomY;
+
+        do
+        {
+            randomX = Random.Range(-30f, 30f);
+            randomY = Random.Range(-30f, 30f);
+        }
+        while (Mathf.Abs(randomX) <= 5f || Mathf.Abs(randomY) <= 5f);
+
+
+        return new Vector3(randomX, 1.5f, randomY);
     }
 }

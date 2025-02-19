@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Transactions;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : TurretController
 {
-    [Header("Transform")]
-    [SerializeField] private Transform turret;
-
+    [Header("LayerMask")]
     [SerializeField] private LayerMask groundLayer;
+
+    [Header("Config")]
+    private float lastFireTime;
 
     void Start()
     {
@@ -17,25 +18,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        TurnTurret();
+        TurnTurret(GetMouseWorldPosition());
 
-        if (Input.GetMouseButton(0))
+        lastFireTime += Time.deltaTime;
+
+        if (Input.GetMouseButton(0) && lastFireTime > fireRate)
         {
-            GetMouseWorldPosition();
+            lastFireTime = 0;
+            StartCoroutine(Fire());
         }
-    }
-
-    private void TurnTurret()
-    {
-        Vector3 mousePosition = GetMouseWorldPosition();
-
-        if (mousePosition == Vector3.zero)
-        {
-            return;
-        }
-
-        Vector3 direction = mousePosition - transform.position;
-        turret.rotation = Quaternion.LookRotation(direction);
     }
 
     private Vector3 GetMouseWorldPosition()

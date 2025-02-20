@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Transactions;
@@ -11,12 +12,8 @@ public class PlayerController : TurretController
     [Header("Config")]
     private float lastFireTime;
 
-    private int fire = 0;
-
-    void Start()
-    {
-        
-    }
+    public event Action<int> OnPlayerHealthChange;
+    public event Action OnPlayerDead;
 
     void Update()
     {
@@ -27,7 +24,11 @@ public class PlayerController : TurretController
         if (Input.GetMouseButton(0) && lastFireTime > fireRate)
         {
             lastFireTime = 0;
-            StartCoroutine(Fire());
+
+            for (int i = 0; i < bulletNum; i++)
+            {
+                StartCoroutine(Fire());
+            }
         }
     }
 
@@ -44,15 +45,52 @@ public class PlayerController : TurretController
         return worldPosition;
     }
 
-    public override void GettingDamage(int damage)
+    protected override void GettingDamage(int damage)
     {
         base.GettingDamage(damage);
 
-        GameManager.Instance.UIController.SetHealthBar(health);
+        OnPlayerHealthChange?.Invoke(health);
 
         if (health <= 0)
         {
-            GameManager.Instance.Dead();
+            OnPlayerDead?.Invoke();
         }
+    }
+
+    public void IncreaseDamage()
+    {
+        minDamage++;
+        maxDamage++;
+    }
+
+    public void IncreaseBulletNumber()
+    {
+        bulletNum++;
+    }
+
+    public void IncreaseBulletSize()
+    {
+        bulletSize += 0.1f;
+    }
+
+    public void IncreaseRicochet()
+    {
+        ricochet++;
+    }
+
+    public void SetPiercing()
+    {
+        isPiercing = true;
+    }
+
+    public void SetVapirism()
+    {
+        GameManager.Instance.OnEnemyKilled += HealthBack;
+    }
+
+    public void HealthBack()
+    {
+        health += 1;
+        OnPlayerHealthChange?.Invoke(health);
     }
 }

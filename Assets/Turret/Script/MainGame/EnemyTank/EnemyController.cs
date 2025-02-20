@@ -1,23 +1,22 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Transactions;
-using TMPro;
-using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 public class EnemyController : TurretController
 {
     private Rigidbody rb;
 
-    [SerializeField] private float movementSpeed = 1f;
-    [SerializeField] private float rotationSpeed = 0.1f;
+    [Header("UI Controller")]
+    [SerializeField] private EnemyUIController enemyUIController;
+
+    [Header("Stat")] 
+    [SerializeField] private float movementSpeed;
+    [SerializeField] private float rotationSpeed;
+    [SerializeField] private float avoidanceRadius;
+    [SerializeField] private float avoidanceForce;
+    [SerializeField] private LayerMask tankLayer;
     float MOVE_SPEED_SCALE = 10f;
-
-    [SerializeField] private Slider healthBar;
-    [SerializeField] private Canvas canvas;
-
 
     bool isMoving = false;
 
@@ -34,31 +33,63 @@ public class EnemyController : TurretController
 
             StartCoroutine(MoveAndShotAtPosition(targetPos));
         }
-
-        // MoveToPosition(targetPosition);
-    }
-
-    private void LateUpdate()
-    {
-        canvas.transform.LookAt(canvas.transform.position + Camera.main.transform.forward);
     }
 
     IEnumerator MoveAndShotAtPosition(Vector3 newTankPosition)
     {
         isMoving = true;
 
+        Vector3 targetDirection;
+
         while (Vector3.Distance(transform.position, newTankPosition) >= 0.5f)
         {
-            Vector3 direction = newTankPosition - transform.position;
+            targetDirection = (newTankPosition - transform.position).normalized;
+            targetDirection.y = 0;
 
-            transform.rotation = Quaternion.LookRotation(direction);
+            Vector3 avoidanceDirection = Vector3.zero;
+            int avoidanceCount = 0;
 
-            rb.AddForce(transform.forward * movementSpeed * MOVE_SPEED_SCALE, ForceMode.Acceleration);
+            Collider[] nearbyTanks = Physics.OverlapSphere(transform.position, avoidanceRadius, tankLayer);
+
+            foreach (Collider tankCollider in nearbyTanks)
+            {
+                if (tankCollider.gameObject != gameObject)
+                {
+                    Vector3 awayFromTank = transform.position - tankCollider.transform.position;
+                    float distance = awayFromTank.magnitude;
+
+                    if (distance > 0.1f)
+                    {
+                        float strength = 1.0f - (distance / avoidanceRadius);
+                        avoidanceDirection += awayFromTank.normalized * strength;
+                        avoidanceCount++;
+                    }
+                }
+            }
+
+            if (avoidanceCount > 0)
+            {
+                avoidanceDirection /= avoidanceCount;
+                avoidanceDirection.y = 0;
+            }
+
+            Vector3 finalDirection = (targetDirection + avoidanceDirection * avoidanceForce).normalized;
+            finalDirection.y = 0;
+
+            rb.velocity = finalDirection * movementSpeed;
+
+            if (rb.velocity.magnitude > 0.1f)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(rb.velocity);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f); // Smooth turning
+            }
 
             yield return null;
         }
 
-        transform.position = newTankPosition;
+        rb.velocity = Vector3.zero;
+
+        // Rotation
 
         Vector3 playerPosition = GameManager.Instance.PlayerController.transform.position;
         playerPosition.y = 1.5f;
@@ -75,7 +106,6 @@ public class EnemyController : TurretController
 
         turret.rotation = playerDirection;
 
-        // Shot
         StartCoroutine(Fire());
 
 
@@ -91,14 +121,16 @@ public class EnemyController : TurretController
         isMoving = false;
     }
 
-    public override void GettingDamage(int damage)
+    protected override void GettingDamage(int damage)
     {
-        if (health - damage <= 0)
-        {
-            GameManager.Instance.IncreasePoint();
-        }
-
         base.GettingDamage(damage);
-        healthBar.value = health;
+
+        enemyUIController.SetHealthBar(health);
+
+        if (health <= 0)
+        {
+            GameManager.Instance.OnEnemyKilled?.Invoke();
+            Destroy(this.gameObject);
+        }
     }
 }

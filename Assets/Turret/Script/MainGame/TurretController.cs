@@ -1,6 +1,10 @@
+using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 public class TurretController : MonoBehaviour
 {
@@ -11,10 +15,15 @@ public class TurretController : MonoBehaviour
     protected float fireRate = 0.1f;
     private float maxFireRange = 500f;
 
-    private int fireTime = 0;
-
     [field: Header("Stat")]
-    [field: SerializeField] public int health { get; private set; } = 100;
+    [field: SerializeField] public int health { get; protected set; } = 100;
+    [SerializeField] protected int minDamage = 1;
+    [SerializeField] protected int maxDamage = 6;
+    [SerializeField] protected int bulletNum = 1;
+    [SerializeField] protected float bulletSize = 0.1f;
+    [SerializeField] protected int ricochet = 1;
+    [SerializeField] protected bool isPiercing = false;
+
 
     private WaitForSecondsRealtime existAmmoTime;
 
@@ -45,11 +54,11 @@ public class TurretController : MonoBehaviour
 
         GameObject ammo = AmmoPool.SharedInstance.GetPooledObject();
 
-        TurretController turretHited= hit.collider.GetComponentInParent<TurretController>();
+        TurretController turretHited = hit.collider.GetComponentInParent<TurretController>();
 
         if (turretHited != null)
         {
-            turretHited.GettingDamage(Random.Range(1, 6));
+            turretHited.GettingDamage(UnityEngine.Random.Range(minDamage, maxDamage));
         }
 
         if (ammo != null)
@@ -58,7 +67,7 @@ public class TurretController : MonoBehaviour
 
             ammo.transform.position = turret.position + turret.forward * direction.magnitude / 2;
             ammo.transform.rotation = turret.transform.rotation;
-            ammo.transform.localScale = new Vector3(0.1f, 0.1f, direction.magnitude);
+            ammo.transform.localScale = new Vector3(bulletSize, bulletSize, direction.magnitude);
 
             ammo.SetActive(true);
             yield return existAmmoTime;
@@ -67,13 +76,18 @@ public class TurretController : MonoBehaviour
         }
     }
 
-    public virtual void GettingDamage(int damage)
+    protected virtual void GettingDamage(int damage)
     {
         health -= damage;
 
         if (health <= 0)
         {
-            Destroy(this.gameObject);
+            HandleDestruction();
         }
+    }
+
+    protected virtual void HandleDestruction()
+    {
+
     }
 }

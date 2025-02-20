@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,19 +6,25 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] public static GameManager Instance { get; private set; }
+    [SerializeField] private float FPS;
 
+    [field: Header("Controller")]
     [field: SerializeField] public PlayerController PlayerController { get; private set; }
+    [field: SerializeField] public TurretUpgradeController TurretUpgradeController { get; private set; }
     [field: SerializeField] public UIController UIController { get; private set; }
 
-    public GameObject enemyPrefab;
 
-    [SerializeField] private float FPS;
+    [Header("Prefab")]
+    [SerializeField] private GameObject enemyPrefab;
+
+    [Header("Game Stat")]
     [SerializeField] private int score = 0;
+    [SerializeField] private int enemyCount = 0;
 
     [SerializeField] private float SpawnTimer = 5f;
     private float lastSpawnTime = 5;
 
-    private bool isDead = false;
+    public Action OnEnemyKilled;
 
     private void Awake()
     {
@@ -28,8 +35,27 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
-
         Application.targetFrameRate = 60;
+    }
+
+    private void Start()
+    {
+        PlayerController.OnPlayerDead += PlayerController_OnTurretDead;
+        PlayerController.OnPlayerHealthChange += PlayerController_OnGettingDamage;
+
+        OnEnemyKilled += IncreasePoint;
+    }
+
+    private void PlayerController_OnGettingDamage(int health)
+    {
+        UIController.SetHealthBar(health);
+    }
+
+    private void PlayerController_OnTurretDead()
+    {
+        Time.timeScale = 0f;
+
+        UIController.ShowDeadPanel();
     }
 
     private void Update()
@@ -38,13 +64,14 @@ public class GameManager : MonoBehaviour
 
         lastSpawnTime += Time.deltaTime;
 
-        if (lastSpawnTime > SpawnTimer && !isDead)
+        if (lastSpawnTime > SpawnTimer && enemyCount <= 10)
         {
             lastSpawnTime = 0;
+            SpawnTimer = Mathf.Max(SpawnTimer - 0.1f, 1);
 
             Instantiate(enemyPrefab, GetRandomPosition(14f), Quaternion.identity);
 
-            SpawnTimer = Mathf.Max(SpawnTimer - 0.1f, 1);
+            enemyCount++;
         }
     }
 
@@ -55,8 +82,8 @@ public class GameManager : MonoBehaviour
 
         do
         {
-            randomX = Random.Range(-15f, 15f);
-            randomY = Random.Range(-15f, 15f);
+            randomX = UnityEngine.Random.Range(-15f, 15f);
+            randomY = UnityEngine.Random.Range(-15f, 15f);
         }
         while (Mathf.Abs(randomX) <= minValue || Mathf.Abs(randomY) <= minValue);
 
@@ -65,13 +92,14 @@ public class GameManager : MonoBehaviour
 
     public void IncreasePoint()
     {
+        enemyCount--;
+
         UIController.SetPlayerScore(++score);
-    }
 
-    public void Dead()
-    {
-        Time.timeScale = 0f;
-
-        UIController.ShowDeadPanel();
+        if (score % 10 == 0)
+        {
+            TurretUpgradeController.SelectUpgrade();
+        }
     }
 }
+

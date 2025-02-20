@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6422678276512001948}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,6 @@ GameObject:
   - component: {fileID: 4683733402706363208}
   - component: {fileID: 7854798638235700712}
   - component: {fileID: 664236762130329149}
-  - component: {fileID: 4514665231010166698}
   m_Layer: 0
   m_Name: Base
   m_TagString: Untagged
@@ -120,27 +119,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4514665231010166698
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1329888377341159911}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2170751967275647395
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,9 +128,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7711567165187030869}
-  - component: {fileID: 4056889675630188057}
   - component: {fileID: 2612326733539113432}
-  m_Layer: 0
+  - component: {fileID: 4056889675630188057}
+  - component: {fileID: 6843551140562630360}
+  - component: {fileID: 2119894687853125881}
+  m_Layer: 7
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,24 +157,6 @@ Transform:
   - {fileID: 2348189568269554652}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4056889675630188057
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2170751967275647395}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e976465568adf348bfe4d5ba2844ddb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  turret: {fileID: 3879350856965427131}
-  tankManagerValue: {fileID: 11400000, guid: 3549bb9f34dd5b141844116858022661, type: 2}
-  movementSpeed: 2
-  rotationSpeed: 50
-  healthBar: {fileID: 84051424515062811}
-  canvas: {fileID: 7123039579254651036}
 --- !u!54 &2612326733539113432
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -220,8 +182,65 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 84
   m_CollisionDetection: 0
+--- !u!114 &4056889675630188057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2170751967275647395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e976465568adf348bfe4d5ba2844ddb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turret: {fileID: 3879350856965427131}
+  <health>k__BackingField: 100
+  enemyUIController: {fileID: 6843551140562630360}
+  movementSpeed: 5
+  rotationSpeed: 50
+  avoidanceRadius: 5
+  avoidanceForce: 1
+  tankLayer:
+    serializedVersion: 2
+    m_Bits: 128
+--- !u!114 &6843551140562630360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2170751967275647395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcd632c40ddc43548a2a1ec99d917efb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvas: {fileID: 7123039579254651036}
+  healthBar: {fileID: 84051424515062811}
+--- !u!65 &2119894687853125881
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2170751967275647395}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2, y: 2, z: 4}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2996084421053223073
 GameObject:
   m_ObjectHideFlags: 0
@@ -233,7 +252,6 @@ GameObject:
   - component: {fileID: 3879350856965427131}
   - component: {fileID: 8413614400873619225}
   - component: {fileID: 7905107525521746611}
-  - component: {fileID: 4368148443338051904}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -307,27 +325,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4368148443338051904
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2996084421053223073}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 2.5}
-  m_Center: {x: 0, y: 0, z: 0.75}
 --- !u!1 &3700793414339337948
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,7 +336,7 @@ GameObject:
   - component: {fileID: 7336579926743521559}
   - component: {fileID: 7104832150821316163}
   - component: {fileID: 6443826204047686737}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -414,7 +411,7 @@ GameObject:
   - component: {fileID: 2077201270971932357}
   - component: {fileID: 2003692846029856761}
   - component: {fileID: 528965652105615084}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -573,7 +570,7 @@ GameObject:
   - component: {fileID: 7123039579254651036}
   - component: {fileID: 1265459291718173595}
   - component: {fileID: 6488117260872494592}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -673,7 +670,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2088923286990676326}
   - component: {fileID: 84051424515062811}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: PlayerSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -740,7 +737,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 2077201270971932357}
   m_HandleRect: {fileID: 0}

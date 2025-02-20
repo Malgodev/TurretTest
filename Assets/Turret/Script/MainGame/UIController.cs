@@ -7,12 +7,15 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
+    [Header("Player info")]
     [SerializeField] private Slider playerHealthBar;
     [SerializeField] private TMP_Text playerHealthText;
     [SerializeField] private TMP_Text playerScoreText;
 
+    [Header("Panel")]
     [SerializeField] private GameObject deadPanel;
 
+    [Header("Button")]
     [SerializeField] private Button restartButton;
 
     private void Start()
@@ -38,6 +41,7 @@ public class UIController : MonoBehaviour
 
     public void Restart()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
 }

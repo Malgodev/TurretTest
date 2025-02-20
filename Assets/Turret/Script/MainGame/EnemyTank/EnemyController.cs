@@ -4,18 +4,20 @@ using System.Transactions;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
 public class EnemyController : TurretController
 {
-    [Header("Config")]
-    [SerializeField] private TurretManagerScriptableObject tankManagerValue;
-
     private Rigidbody rb;
 
     [SerializeField] private float movementSpeed = 1f;
     [SerializeField] private float rotationSpeed = 0.1f;
     float MOVE_SPEED_SCALE = 10f;
+
+    [SerializeField] private Slider healthBar;
+    [SerializeField] private Canvas canvas;
+
 
     bool isMoving = false;
 
@@ -28,12 +30,17 @@ public class EnemyController : TurretController
     {
         if (!isMoving)
         {
-            Vector3 targetPos = GetRandomPosition();
+            Vector3 targetPos = GameManager.GetRandomPosition(5f);
 
             StartCoroutine(MoveAndShotAtPosition(targetPos));
         }
 
         // MoveToPosition(targetPosition);
+    }
+
+    private void LateUpdate()
+    {
+        canvas.transform.LookAt(canvas.transform.position + Camera.main.transform.forward);
     }
 
     IEnumerator MoveAndShotAtPosition(Vector3 newTankPosition)
@@ -55,8 +62,6 @@ public class EnemyController : TurretController
 
         Vector3 playerPosition = GameManager.Instance.PlayerController.transform.position;
         playerPosition.y = 1.5f;
-
-        Debug.Log(playerPosition);
 
         Quaternion playerDirection = Quaternion.LookRotation(playerPosition - transform.position);
         Quaternion originDirection = turret.rotation;
@@ -83,23 +88,17 @@ public class EnemyController : TurretController
 
         turret.rotation = originDirection;
 
-        yield return new WaitForSeconds(2f);
         isMoving = false;
     }
 
-    private Vector3 GetRandomPosition()
+    public override void GettingDamage(int damage)
     {
-        float randomX ;
-        float randomY;
-
-        do
+        if (health - damage <= 0)
         {
-            randomX = Random.Range(-15f, 15f);
-            randomY = Random.Range(-15f, 15f);
+            GameManager.Instance.IncreasePoint();
         }
-        while (Mathf.Abs(randomX) <= 5f || Mathf.Abs(randomY) <= 5f);
 
-
-        return new Vector3(randomX, 1.5f, randomY);
+        base.GettingDamage(damage);
+        healthBar.value = health;
     }
 }

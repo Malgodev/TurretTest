@@ -9,7 +9,6 @@ public class PlayerController : TurretController
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Config")]
-    [SerializeField] private TurretManagerScriptableObject tankManagerValue;
     private float lastFireTime;
 
     private int fire = 0;
@@ -43,5 +42,17 @@ public class PlayerController : TurretController
         }
 
         return worldPosition;
+    }
+
+    public override void GettingDamage(int damage)
+    {
+        base.GettingDamage(damage);
+
+        GameManager.Instance.UIController.SetHealthBar(health);
+
+        if (health <= 0)
+        {
+            GameManager.Instance.Dead();
+        }
     }
 }

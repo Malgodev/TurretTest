@@ -13,6 +13,9 @@ public class TurretController : MonoBehaviour
 
     private int fireTime = 0;
 
+    [field: Header("Stat")]
+    [field: SerializeField] public int health { get; private set; } = 100;
+
     private WaitForSecondsRealtime existAmmoTime;
 
     private void Awake()
@@ -42,6 +45,13 @@ public class TurretController : MonoBehaviour
 
         GameObject ammo = AmmoPool.SharedInstance.GetPooledObject();
 
+        TurretController turretHited= hit.collider.GetComponentInParent<TurretController>();
+
+        if (turretHited != null)
+        {
+            turretHited.GettingDamage(Random.Range(1, 6));
+        }
+
         if (ammo != null)
         {
             Vector3 direction = hit.point - turret.position;
@@ -54,6 +64,16 @@ public class TurretController : MonoBehaviour
             yield return existAmmoTime;
 
             ammo.SetActive(false);
+        }
+    }
+
+    public virtual void GettingDamage(int damage)
+    {
+        health -= damage;
+
+        if (health <= 0)
+        {
+            Destroy(this.gameObject);
         }
     }
 }

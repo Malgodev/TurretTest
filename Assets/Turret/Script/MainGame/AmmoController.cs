@@ -1,8 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+
+[Serializable]
+struct BulletStat
+{
+    public int MinDamage;
+    public int MaxDamage;
+    public float BulletSize;
+    public bool IsPiercing;
+
+}
 
 public class AmmoController : MonoBehaviour
 {
@@ -11,6 +22,7 @@ public class AmmoController : MonoBehaviour
     [SerializeField] private float ammoSpeed = 50f;
 
     [Header("Stat")]
+    [SerializeField] private BulletManagerScriptableObject bulletStat;
     [SerializeField] protected int minDamage = 1;
     [SerializeField] protected int maxDamage = 6;
     [SerializeField] protected int bulletNum = 1;
@@ -24,6 +36,7 @@ public class AmmoController : MonoBehaviour
 
     private void OnEnable()
     {
+        existTime = 0;
         ricochetCount = 0;
     }
 
@@ -47,6 +60,11 @@ public class AmmoController : MonoBehaviour
     {
         this.shooter = shooter;
 
+        if (shooter == ETag.Player)
+        {
+
+        }
+
         this.transform.position = position;
         this.transform.rotation = rotation;
         this.transform.localScale = new Vector3(bulletSize, bulletSize, 1);
@@ -54,7 +72,7 @@ public class AmmoController : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider == null || collider.tag == ETag.Player.ToString())
+        if (collider == null || collider.tag == ETag.Player.ToString() || collider.tag == ETag.Ammo.ToString())
         {
             return;
         }
@@ -93,6 +111,7 @@ public class AmmoController : MonoBehaviour
             normal = normal.normalized;
 
             rb.velocity = Vector3.Reflect(rb.velocity, normal).normalized * ammoSpeed;
+
             transform.rotation = Quaternion.LookRotation(rb.velocity);
         }
     }
@@ -105,7 +124,7 @@ public class AmmoController : MonoBehaviour
 
             if (turretController != null)
             {
-                turretController.GettingDamage(Random.Range(minDamage, maxDamage));
+                turretController.GettingDamage(UnityEngine.Random.Range(minDamage, maxDamage));
             }
         }
     }

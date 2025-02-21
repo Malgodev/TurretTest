@@ -8,6 +8,7 @@ public enum ETag
     Player,
     Wall,
     Enemy,
+    Ammo,
     Null,
 }
 
@@ -20,7 +21,6 @@ public class GameManager : MonoBehaviour
     [field: SerializeField] public PlayerController PlayerController { get; private set; }
     [field: SerializeField] public TurretUpgradeController TurretUpgradeController { get; private set; }
     [field: SerializeField] public UIController UIController { get; private set; }
-
 
     [Header("Prefab")]
     [SerializeField] private GameObject enemyPrefab;

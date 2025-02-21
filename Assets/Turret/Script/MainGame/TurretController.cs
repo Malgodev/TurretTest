@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 public class TurretController : MonoBehaviour
 {
@@ -13,16 +14,12 @@ public class TurretController : MonoBehaviour
 
     [Header("Config")]
     protected float fireRate = 0.1f;
-    private float maxFireRange = 500f;
 
     [field: Header("Stat")]
     [field: SerializeField] public int health { get; protected set; } = 100;
 
-    private WaitForSeconds delayBetweenAmmo;
-
     private void Awake()
     {
-        delayBetweenAmmo = new WaitForSeconds(0.05f);
     }
 
     protected void TurnTurret(Vector3 targetPosition)
@@ -39,35 +36,36 @@ public class TurretController : MonoBehaviour
         turret.rotation = Quaternion.LookRotation(direction);
     }
 
-    protected IEnumerator Fire()
+    protected void TurnTurret(Quaternion targetRotation)
     {
-        //RaycastHit hit;
+        turret.rotation = targetRotation;
+    }
 
-        //Physics.Raycast(turret.position + turret.forward.normalized * 3f, turret.forward, out hit, maxFireRange);
+    protected virtual void Fire()
+    {
+        Vector3 targetPosition = turret.position + turret.forward;
+        targetPosition.y = 1.5f;
 
         GameObject ammo = AmmoPool.SharedInstance.GetPooledObject();
-
-        //TurretController turretHited = hit.collider.GetComponentInParent<TurretController>();
-
-        //if (turretHited != null)
-        //{
-        //    turretHited.GettingDamage(UnityEngine.Random.Range(minDamage, maxDamage));
-        //}
 
         if (ammo != null)
         {
             AmmoController ammoController = ammo.GetComponent<AmmoController>();
 
-            Vector3 targetPosition = turret.position + turret.forward;
-            targetPosition.y = 1.5f;
 
-
-            ammoController.SetBulletInfo(GameManager.ParseTag(this.tag), targetPosition, turret.transform.rotation);
+            ammoController.SetBulletInfo(GameManager.ParseTag(this.tag), targetPosition, AngleOffset());
 
             ammo.SetActive(true);
-
-            yield return null;
         }
+    }
+
+    public Quaternion AngleOffset(int delta = 1)
+    {
+        float randomAngle = UnityEngine.Random.Range(-5f * delta, 5f * delta); 
+        Quaternion offsetRotation = Quaternion.Euler(0, randomAngle, 0);
+        Quaternion newRotation = turret.transform.rotation * offsetRotation;
+
+        return newRotation;
     }
 
     public virtual void GettingDamage(int damage)

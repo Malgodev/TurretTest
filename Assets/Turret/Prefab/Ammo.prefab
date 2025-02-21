@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5251833277469302064}
   m_Layer: 0
   m_Name: Ammo
-  m_TagString: Untagged
+  m_TagString: Ammo
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -148,6 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 2354577797050159218}
   ammoSpeed: 50
+  bulletStat: {fileID: 11400000, guid: 38eada039983c304c96025078afc332a, type: 2}
   minDamage: 1
   maxDamage: 6
   bulletNum: 1

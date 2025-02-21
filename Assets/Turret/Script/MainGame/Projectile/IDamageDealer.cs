@@ -1,0 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public interface IDamageDealer
+{
+    float GetDamage();
+    DamageType GetDamageType();
+    GameObject GetOwner();
+}

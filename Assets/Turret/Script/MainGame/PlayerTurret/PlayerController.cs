@@ -1,3 +1,4 @@
+using ProjectilePooling;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,6 +16,11 @@ public class PlayerController : TurretController
     public event Action<int> OnPlayerHealthChange;
     public event Action OnPlayerDead;
 
+    private void Start()
+    {
+                
+    }
+
     void Update()
     {
         TurnTurret(GetMouseWorldPosition());
@@ -23,10 +29,23 @@ public class PlayerController : TurretController
 
         if (Input.GetMouseButton(0) && lastFireTime > fireRate)
         {
-            lastFireTime = 0;
-
-            StartCoroutine(Fire());
+            ProjectileController bullet = ProjectilePoolManager.Instance.SpawnProjectile(
+                ProjectilePoolManager.ProjectileType.PlayerBullet,
+                transform.position,
+                transform.rotation,
+                gameObject
+            );
         }
+
+
+        //if (Input.GetMouseButton(0) && lastFireTime > fireRate)
+        //{
+        //    lastFireTime = 0;
+
+        //    // StartCoroutine(BeginShoot());
+
+        //    Fire();
+        //}
     }
 
     private Vector3 GetMouseWorldPosition()
@@ -40,6 +59,16 @@ public class PlayerController : TurretController
         }
 
         return worldPosition;
+    }
+
+    protected override void Fire()
+    {
+        TurretUpgradeController.Instance.CurUpgrade.TryGetValue(EUpgradeName.BulletNumber, out int bulletNum);
+
+        for (int i = 0; i <= bulletNum; i++)
+        {
+            base.Fire();
+        }
     }
 
     public override void GettingDamage(int damage)

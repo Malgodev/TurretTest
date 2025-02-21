@@ -16,7 +16,6 @@ public class EnemyController : TurretController
     [SerializeField] private float avoidanceRadius;
     [SerializeField] private float avoidanceForce;
     [SerializeField] private LayerMask tankLayer;
-    float MOVE_SPEED_SCALE = 10f;
 
     bool isMoving = false;
 
@@ -106,7 +105,7 @@ public class EnemyController : TurretController
 
         turret.rotation = playerDirection;
 
-        // StartCoroutine(Fire());
+        // Fire();
 
 
         while (Quaternion.Angle(turret.rotation, originDirection) >= 0.1f)

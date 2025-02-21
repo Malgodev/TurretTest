@@ -22,7 +22,7 @@ struct Upgrade
     }
 }
 
-enum EUpgradeName
+public enum EUpgradeName
 {
     IncreaseDamage,
     BulletNumber,
@@ -35,15 +35,28 @@ enum EUpgradeName
 
 public class TurretUpgradeController : MonoBehaviour
 {
+    [SerializeField] public static TurretUpgradeController Instance {get; private set;}
+
     [SerializeField] private List<Upgrade> upgradeList = new List<Upgrade>();
+    public Dictionary<EUpgradeName, int> CurUpgrade { get; private set; } = new Dictionary<EUpgradeName, int>();
 
-    private Dictionary<EUpgradeName, int> curUpgrade = new Dictionary<EUpgradeName, int>();
+    [Header("Upgrade List")]
+    [SerializeField] private EUpgradeName[] choseableUpgrade;
+    [SerializeField] private PlayerController playerController;
 
+    [Header("UI")]
     [SerializeField] private GameObject selectUpgradePanel;
 
-    [SerializeField] private EUpgradeName[] choseableUpgrade;
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
 
-    [SerializeField] private PlayerController playerController;
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -78,10 +91,10 @@ public class TurretUpgradeController : MonoBehaviour
     {
         List<EUpgradeName> upgradeableList = upgradeList.Select(upgrade => upgrade.Name).ToList();
 
-        foreach (EUpgradeName upgradeName in curUpgrade.Keys)
+        foreach (EUpgradeName upgradeName in CurUpgrade.Keys)
         {
             Upgrade upgrade = GetUpgradeInfo(upgradeName);
-            if (curUpgrade[upgradeName] > upgrade.MaxiumUpgrade)
+            if (CurUpgrade[upgradeName] > upgrade.MaxiumUpgrade)
             {
                 upgradeableList.Remove(upgradeName);
             }
@@ -110,13 +123,13 @@ public class TurretUpgradeController : MonoBehaviour
         Time.timeScale = 1;
         EUpgradeName selectedUpgrade = choseableUpgrade[i];
 
-        if (curUpgrade.ContainsKey(selectedUpgrade))
+        if (CurUpgrade.ContainsKey(selectedUpgrade))
         {
-            curUpgrade[selectedUpgrade]++;
+            CurUpgrade[selectedUpgrade]++;
         }
         else
         {
-            curUpgrade[selectedUpgrade] = 1;
+            CurUpgrade[selectedUpgrade] = 1;
         }
 
         UpgradePlayer(selectedUpgrade);
@@ -125,33 +138,8 @@ public class TurretUpgradeController : MonoBehaviour
 
     private void UpgradePlayer(EUpgradeName upgradeName)
     {
-        //switch (upgradeName)
-        //{
-        //    case EUpgradeName.IncreaseDamage:
-        //        playerController.IncreaseDamage();
-        //        break;
-
-        //    case EUpgradeName.BulletNumber:
-        //        playerController.IncreaseBulletNumber();
-        //        break;
-        //    case EUpgradeName.BulletSize:
-        //        playerController.IncreaseBulletSize();
-        //        break;
-        //    case EUpgradeName.Ricochet:
-        //        playerController.IncreaseRicochet();
-        //        break;
-        //    case EUpgradeName.Piercing:
-        //        playerController.SetPiercing();
-        //        break;
-        //    case EUpgradeName.Vapirism:
-        //        playerController.SetVapirism();
-        //        break;
-        //}
+        CurUpgrade[upgradeName]++;
     }
-
-    //Ricochet,
-    //Piercing,
-    //Vapirism,
 
     public void ShowSelectUpgradePanel(bool isShow)
     {

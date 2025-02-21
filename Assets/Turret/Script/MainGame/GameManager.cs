@@ -3,6 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ETag
+{
+    Player,
+    Wall,
+    Enemy,
+    Null,
+}
+
 public class GameManager : MonoBehaviour
 {
     [SerializeField] public static GameManager Instance { get; private set; }
@@ -22,7 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int enemyCount = 0;
 
     [SerializeField] private float SpawnTimer = 5f;
-    private float lastSpawnTime = 5;
+    private float lastSpawnTime;
 
     public Action OnEnemyKilled;
 
@@ -36,6 +44,8 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         Application.targetFrameRate = 60;
+
+        lastSpawnTime = SpawnTimer;
     }
 
     private void Start()
@@ -70,7 +80,6 @@ public class GameManager : MonoBehaviour
             SpawnTimer = Mathf.Max(SpawnTimer - 0.1f, 1);
 
             Instantiate(enemyPrefab, GetRandomPosition(14f), Quaternion.identity);
-
             enemyCount++;
         }
     }
@@ -100,6 +109,17 @@ public class GameManager : MonoBehaviour
         {
             TurretUpgradeController.SelectUpgrade();
         }
+    }
+
+    public static ETag ParseTag(string tag)
+    {
+        if (Enum.TryParse(tag, true, out ETag weapon))
+        {
+            return weapon;
+        }
+
+        Debug.LogError("Invalid enum value! Returning default.");
+        return ETag.Null;
     }
 }
 

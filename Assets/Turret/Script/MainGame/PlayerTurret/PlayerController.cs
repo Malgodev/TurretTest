@@ -25,10 +25,7 @@ public class PlayerController : TurretController
         {
             lastFireTime = 0;
 
-            for (int i = 0; i < bulletNum; i++)
-            {
-                StartCoroutine(Fire());
-            }
+            StartCoroutine(Fire());
         }
     }
 
@@ -45,7 +42,7 @@ public class PlayerController : TurretController
         return worldPosition;
     }
 
-    protected override void GettingDamage(int damage)
+    public override void GettingDamage(int damage)
     {
         base.GettingDamage(damage);
 
@@ -55,42 +52,5 @@ public class PlayerController : TurretController
         {
             OnPlayerDead?.Invoke();
         }
-    }
-
-    public void IncreaseDamage()
-    {
-        minDamage++;
-        maxDamage++;
-    }
-
-    public void IncreaseBulletNumber()
-    {
-        bulletNum++;
-    }
-
-    public void IncreaseBulletSize()
-    {
-        bulletSize += 0.1f;
-    }
-
-    public void IncreaseRicochet()
-    {
-        ricochet++;
-    }
-
-    public void SetPiercing()
-    {
-        isPiercing = true;
-    }
-
-    public void SetVapirism()
-    {
-        GameManager.Instance.OnEnemyKilled += HealthBack;
-    }
-
-    public void HealthBack()
-    {
-        health += 1;
-        OnPlayerHealthChange?.Invoke(health);
     }
 }

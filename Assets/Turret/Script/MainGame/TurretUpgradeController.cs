@@ -125,28 +125,28 @@ public class TurretUpgradeController : MonoBehaviour
 
     private void UpgradePlayer(EUpgradeName upgradeName)
     {
-        switch (upgradeName)
-        {
-            case EUpgradeName.IncreaseDamage:
-                playerController.IncreaseDamage();
-                break;
+        //switch (upgradeName)
+        //{
+        //    case EUpgradeName.IncreaseDamage:
+        //        playerController.IncreaseDamage();
+        //        break;
 
-            case EUpgradeName.BulletNumber:
-                playerController.IncreaseBulletNumber();
-                break;
-            case EUpgradeName.BulletSize:
-                playerController.IncreaseBulletSize();
-                break;
-            case EUpgradeName.Ricochet:
-                playerController.IncreaseRicochet();
-                break;
-            case EUpgradeName.Piercing:
-                playerController.SetPiercing();
-                break;
-            case EUpgradeName.Vapirism:
-                playerController.SetVapirism();
-                break;
-        }
+        //    case EUpgradeName.BulletNumber:
+        //        playerController.IncreaseBulletNumber();
+        //        break;
+        //    case EUpgradeName.BulletSize:
+        //        playerController.IncreaseBulletSize();
+        //        break;
+        //    case EUpgradeName.Ricochet:
+        //        playerController.IncreaseRicochet();
+        //        break;
+        //    case EUpgradeName.Piercing:
+        //        playerController.SetPiercing();
+        //        break;
+        //    case EUpgradeName.Vapirism:
+        //        playerController.SetVapirism();
+        //        break;
+        //}
     }
 
     //Ricochet,

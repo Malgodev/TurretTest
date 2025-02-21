@@ -17,19 +17,12 @@ public class TurretController : MonoBehaviour
 
     [field: Header("Stat")]
     [field: SerializeField] public int health { get; protected set; } = 100;
-    [SerializeField] protected int minDamage = 1;
-    [SerializeField] protected int maxDamage = 6;
-    [SerializeField] protected int bulletNum = 1;
-    [SerializeField] protected float bulletSize = 0.1f;
-    [SerializeField] protected int ricochet = 1;
-    [SerializeField] protected bool isPiercing = false;
 
-
-    private WaitForSecondsRealtime existAmmoTime;
+    private WaitForSeconds delayBetweenAmmo;
 
     private void Awake()
     {
-        existAmmoTime = new WaitForSecondsRealtime(fireRate * 0.9f);
+        delayBetweenAmmo = new WaitForSeconds(0.05f);
     }
 
     protected void TurnTurret(Vector3 targetPosition)
@@ -48,35 +41,36 @@ public class TurretController : MonoBehaviour
 
     protected IEnumerator Fire()
     {
-        RaycastHit hit;
+        //RaycastHit hit;
 
-        Physics.Raycast(turret.position + turret.forward.normalized * 3f, turret.forward, out hit, maxFireRange);
+        //Physics.Raycast(turret.position + turret.forward.normalized * 3f, turret.forward, out hit, maxFireRange);
 
         GameObject ammo = AmmoPool.SharedInstance.GetPooledObject();
 
-        TurretController turretHited = hit.collider.GetComponentInParent<TurretController>();
+        //TurretController turretHited = hit.collider.GetComponentInParent<TurretController>();
 
-        if (turretHited != null)
-        {
-            turretHited.GettingDamage(UnityEngine.Random.Range(minDamage, maxDamage));
-        }
+        //if (turretHited != null)
+        //{
+        //    turretHited.GettingDamage(UnityEngine.Random.Range(minDamage, maxDamage));
+        //}
 
         if (ammo != null)
         {
-            Vector3 direction = hit.point - turret.position;
+            AmmoController ammoController = ammo.GetComponent<AmmoController>();
 
-            ammo.transform.position = turret.position + turret.forward * direction.magnitude / 2;
-            ammo.transform.rotation = turret.transform.rotation;
-            ammo.transform.localScale = new Vector3(bulletSize, bulletSize, direction.magnitude);
+            Vector3 targetPosition = turret.position + turret.forward;
+            targetPosition.y = 1.5f;
+
+
+            ammoController.SetBulletInfo(GameManager.ParseTag(this.tag), targetPosition, turret.transform.rotation);
 
             ammo.SetActive(true);
-            yield return existAmmoTime;
 
-            ammo.SetActive(false);
+            yield return null;
         }
     }
 
-    protected virtual void GettingDamage(int damage)
+    public virtual void GettingDamage(int damage)
     {
         health -= damage;
 

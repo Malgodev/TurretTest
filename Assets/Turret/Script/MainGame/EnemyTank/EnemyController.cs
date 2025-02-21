@@ -106,7 +106,7 @@ public class EnemyController : TurretController
 
         turret.rotation = playerDirection;
 
-        StartCoroutine(Fire());
+        // StartCoroutine(Fire());
 
 
         while (Quaternion.Angle(turret.rotation, originDirection) >= 0.1f)
@@ -121,7 +121,7 @@ public class EnemyController : TurretController
         isMoving = false;
     }
 
-    protected override void GettingDamage(int damage)
+    public override void GettingDamage(int damage)
     {
         base.GettingDamage(damage);
 
